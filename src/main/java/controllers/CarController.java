@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
+import view.ObjectCar;
 
 public class CarController {
     @FXML
@@ -17,9 +18,7 @@ public class CarController {
 
     @FXML
     protected void onHelloButtonClick() {
-        transition = new TranslateTransition(Duration.seconds(5), carroPane);
-        transition.setFromX(0);
-        transition.setToX(600);
-        transition.play();
+
+
     }
 }

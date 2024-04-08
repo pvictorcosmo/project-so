@@ -5,6 +5,7 @@ import enums.Priority;
 import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -53,7 +54,10 @@ public class CarApplication extends Application {
     }
 
     static public void updateCarPosition(ObjectCar car) {
-
+        if (root == null) {
+            Platform.runLater(() -> updateCarPosition(car));
+            return;
+        }
         double carWidth = car.getWidth();
         double carHeight = car.getHeight();
         switch (car.getCar().getCarDirection()) {
@@ -73,11 +77,13 @@ public class CarApplication extends Application {
                 break;
         }
 
-        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCar().getCrossingTime()), car);
-        translateTransition.setByX(car.getWidth());
-        translateTransition.setCycleCount(TranslateTransition.INDEFINITE);
-        translateTransition.play();
-        root.getChildren().add(car);
+        Platform.runLater(() -> {
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCar().getCrossingTime()), car);
+            translateTransition.setByX(car.getWidth());
+            translateTransition.setCycleCount(TranslateTransition.INDEFINITE);
+            translateTransition.play();
+            root.getChildren().add(car);
+        });
 
     }
 

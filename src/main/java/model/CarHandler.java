@@ -39,7 +39,6 @@ public class CarHandler {
         cars.add(
           car
         );
-        CarApplication.updateCarPosition(new ObjectCar(20,10,car));
 
     }
     public void createCar(Double waitingTime, Double crossingTime, Direction carDirection){
