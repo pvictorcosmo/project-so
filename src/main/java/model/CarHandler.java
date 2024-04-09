@@ -28,7 +28,7 @@ public class CarHandler {
     public static CarHandler handler(){
         return instance;
     }
-    public void createCar(Double waitingTime, Double crossingTime, ApplicationState applicationState, Direction carDirection){
+    public void createCar(Double waitingTime, Double crossingTime, ApplicationState applicationState, Direction carDirection,double initialX,double initialY){
         Car car = new Car(
                 cars.size(),
                 waitingTime,
@@ -40,8 +40,10 @@ public class CarHandler {
           car
         );
 
+
+
     }
-    public void createCar(Double waitingTime, Double crossingTime, Direction carDirection){
+    public void createCar(Double waitingTime, Double crossingTime, Direction carDirection,double initialX,double initialY){
         Car car = new Car(
                 cars.size(),
                 waitingTime,
@@ -51,7 +53,8 @@ public class CarHandler {
         cars.add(
           car
         );
-        CarApplication.updateCarPosition(new ObjectCar(20,10,car));
+
+
     }
     public void initCars(){
         for(Car car : cars){

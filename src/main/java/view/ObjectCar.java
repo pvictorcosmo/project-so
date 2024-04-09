@@ -6,6 +6,7 @@ import model.Car;
 
 public class ObjectCar extends Rectangle {
     private double x;
+    public boolean isAssigned = false;
     private double y;
     private Car car;
 
