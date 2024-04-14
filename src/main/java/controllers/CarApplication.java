@@ -91,7 +91,7 @@ public class CarApplication extends Application {
             // Verificando se o carro está cruzando e não foi atribuído
             if (car.getApplicationState() == ApplicationState.CROSSING && !car.isAssigned) {
                 // Tentando adquirir o semáforo da ponte
-                if (bridgeSemaphore.tryAcquire()) {
+
                     car.isAssigned = true;
                     ObjectCar objCar = new ObjectCar(50 + 20, 225, car);
 
@@ -119,14 +119,14 @@ public class CarApplication extends Application {
                             // Ao terminar a transição, remove o carro da cena e libera o semáforo da ponte
                             root.getChildren().remove(objCar);
                             car.isAssigned = false;
-                            bridgeSemaphore.release(); // Libera o semáforo da ponte
+
                         });
 
                         // Iniciando a transição de movimento do carro
                         translateTransition.play();
                         root.getChildren().add(objCar); // Adicionando o carro à cena
                     });
-                }
+
             }
         }
     }
