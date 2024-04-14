@@ -3,8 +3,6 @@ package model;
 import controllers.CarApplication;
 import enums.ApplicationState;
 import enums.Direction;
-import view.ObjectCar;
-
 
 public class Car extends Thread {
     private Integer id;
@@ -12,6 +10,8 @@ public class Car extends Thread {
     private Double crossingTime;
     private ApplicationState state;
     private Direction carDirection;
+    public boolean isAssigned = false;
+
 
 
     private Double expectedTime;
@@ -52,9 +52,8 @@ public class Car extends Thread {
                     expectedTime += actualTime - lastTime;
                     lastTime = actualTime;
                     if(expectedTime/1000 >= waitingTime){
-                        for(Car car: CarHandler.handler().getCars()){
-                            CarApplication.updateCarPosition(new ObjectCar((50 + 20),(200 + 250) / 2.0,car));
-                        }
+                        Log.doLog(CarHandler.handler().getCars());
+
 
                         state = ApplicationState.WAITING;
                         expectedTime = 0.0;
@@ -62,9 +61,8 @@ public class Car extends Thread {
                 }
                 else if(state == ApplicationState.WAITING){
                     Bridge.bridge().getMutex().acquire();
-                    for(Car car: CarHandler.handler().getCars()){
-                        CarApplication.updateCarPosition(new ObjectCar(50 + 20, 225,car));
-                    }
+                    Log.doLog(CarHandler.handler().getCars());
+
                     if((Bridge.bridge().getBridgeDirection()== Direction.STOP)||(carDirection != Bridge.bridge().getBridgeDirection())) {
                         if (carDirection != Bridge.bridge().getBridgeDirection() && Bridge.bridge().getBridgeDirection() != Direction.STOP) {
                             Bridge.bridge().setAux(Bridge.bridge().getAux() + 1);
@@ -86,9 +84,9 @@ public class Car extends Thread {
                     timeCrossing += actualTime - lastTime;
                     lastTime = actualTime;
                     if(timeCrossing/1000 >= timeCrossing){
-                        for(Car car: CarHandler.handler().getCars()){
-                            CarApplication.updateCarPosition(new ObjectCar(50 + 20, 225,car));
-                        }
+                        Log.doLog(CarHandler.handler().getCars());
+                        CarApplication.updateCarPosition(CarHandler.handler().getCars());
+
                         Bridge.bridge().getMutex().acquire();
                         Bridge.bridge().getCar().acquire();
                         if(Bridge.bridge().getCar().availablePermits() == 0) {

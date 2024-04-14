@@ -17,9 +17,12 @@ import model.Car;
 import model.CarHandler;
 import view.ObjectCar;
 
+import java.util.List;
+import java.util.concurrent.Semaphore;
+
 public class CarApplication extends Application {
-    static Group root;
-    static boolean isCarCrossing = false; // Variável para controlar se um carro está cruzando a ponte
+    private static Group root;
+    private static final Semaphore bridgeSemaphore = new Semaphore(1);
 
     @Override
     public void start(Stage primaryStage) {
@@ -39,95 +42,96 @@ public class CarApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Ponte Bonita");
         primaryStage.show();
+
+        // Adicionando carros à ponte
+        addCarsToBridge();
+
+        // Inicializando a ponte
+        Bridge.newBridge(50.0, Priority.LEFT_RIGHT);
+
+        // Iniciando a aplicação
         primaryStage.setTitle("Car App");
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // Add cars to the root group
-        // Start an animation timer to update car positions
+        // Iniciando o timer para atualizar a posição dos carros
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // Atualizando a posição dos carros na ponte
+                CarApplication.updateCarPosition(CarHandler.handler().getCars());
             }
         };
         timer.start();
     }
 
-    static public void updateCarPosition(ObjectCar car) {
-        if (car.getCar().getApplicationState() == ApplicationState.CROSSING && !car.isAssigned) {
-            // Verifica se já existe um carro cruzando na direção oposta
-            if (!hasCarCrossingInOppositeDirection(car.getCar().getCarDirection())) {
-                
-                car.isAssigned = true;
-                System.out.println(car.getCar().getApplicationState());
-                System.out.println(car.getCar().getCarDirection());
-
-                if (root == null) {
-                    Platform.runLater(() -> updateCarPosition(car));
-                    return;
-                }
-                double bridgeWidth = 550 - 50; // Largura da ponte
-
-                Platform.runLater(() -> {
-                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCar().getCrossingTime()), car);
-
-                    // Define a posição inicial com base na direção do carro
-                    double startX;
-                    if (car.getCar().getCarDirection() == Direction.TO_RIGHT) {
-                        startX = 550; // Inicia do final da ponte para a direita
-                        translateTransition.setToX(-bridgeWidth); // Movimento até o início da ponte
-                    } else {
-                        startX = 50 + 20; // Inicia do começo da ponte para a direita
-                        translateTransition.setToX(bridgeWidth); // Movimento até o final da ponte
-                    }
-
-                    car.setX(startX);
-                    car.setY(225);
-
-                    translateTransition.setOnFinished(event -> {
-                        // Ao terminar a transição, remove o carro da cena e libera a flag de cruzamento
-                        root.getChildren().remove(car);
-                        car.isAssigned = false;
-                    });
-
-                    translateTransition.play();
-                    root.getChildren().add(car);
-                });
-            }
-        } else {
-            // Se não estiver cruzando ou o carro já estiver atribuído, remove o carro da cena
-            root.getChildren().remove(car);
-        }
-    }
-
-    // Método para verificar se já existe um carro cruzando na direção oposta
-    static boolean hasCarCrossingInOppositeDirection(Direction direction) {
-        for (Car car : CarHandler.handler().getCars()) {
-            if (car.getApplicationState() == ApplicationState.CROSSING &&
-                    car.getCarDirection() != direction) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static void main(String[] args) {
-        Bridge.newBridge(50.0, Priority.LEFT_RIGHT);
+    // Método para adicionar carros à ponte
+    private void addCarsToBridge() {
         CarHandler.newHandler(10);
         CarHandler handler = CarHandler.handler();
 
-        // Dentro do método main() da classe CarApplication
-        handler.createCar(7.0, 12.0, Direction.TO_LEFT,50 + 20, 225);
-        handler.createCar(3.0, 20.0, Direction.TO_LEFT,50 + 20, 225);
-        handler.createCar(9.0, 6.0, Direction.TO_LEFT,50 + 20, 225);
-        handler.createCar(5.0, 9.0, Direction.TO_RIGHT,50 + 20, 225);
-        handler.createCar(7.0, 12.0, Direction.TO_RIGHT,50 + 20, 225);
-        handler.createCar(3.0, 20.0, Direction.TO_LEFT,50 + 20, 225);
-        handler.createCar(9.0, 6.0, Direction.TO_LEFT,50 + 20, 225);
-        handler.createCar(7.0, 12.0, Direction.TO_RIGHT,50 + 20, 225);
-        handler.createCar(3.0, 20.0, Direction.TO_LEFT,50 + 20, 225);
+        // Criando os carros
+        handler.createCar(7.0, 12.0, Direction.TO_LEFT, 50 + 20, 225);
+        handler.createCar(3.0, 20.0, Direction.TO_LEFT, 50 + 20, 225);
+        handler.createCar(9.0, 6.0, Direction.TO_LEFT, 50 + 20, 225);
+        handler.createCar(5.0, 9.0, Direction.TO_RIGHT, 50 + 20, 225);
+        handler.createCar(7.0, 12.0, Direction.TO_RIGHT, 50 + 20, 225);
+        handler.createCar(3.0, 20.0, Direction.TO_LEFT, 50 + 20, 225);
+        handler.createCar(9.0, 6.0, Direction.TO_LEFT, 50 + 20, 225);
+        handler.createCar(7.0, 12.0, Direction.TO_RIGHT, 50 + 20, 225);
+        handler.createCar(3.0, 20.0, Direction.TO_LEFT, 50 + 20, 225);
 
+        // Iniciando os carros
         handler.initCars();
+    }
+
+    // Método para atualizar a posição dos carros na tela
+    static public void updateCarPosition(List<Car> cars) {
+        for (Car car : cars) {
+            // Verificando se o carro está cruzando e não foi atribuído
+            if (car.getApplicationState() == ApplicationState.CROSSING && !car.isAssigned) {
+                // Tentando adquirir o semáforo da ponte
+                if (bridgeSemaphore.tryAcquire()) {
+                    car.isAssigned = true;
+                    ObjectCar objCar = new ObjectCar(50 + 20, 225, car);
+
+                    // Movendo o carro na ponte
+                    Platform.runLater(() -> {
+                        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCrossingTime()), objCar);
+
+                        // Definindo a posição final com base na direção do carro
+                        double startX;
+                        double bridgeWidth = 550 - 50; // Largura da ponte
+                        if (car.getCarDirection() == Direction.TO_RIGHT) {
+                            startX = 550; // Começa do final da ponte para a direita
+                            translateTransition.setToX(-bridgeWidth); // Movimento até o início da ponte
+                        } else {
+                            startX = 50 + 20; // Começa do começo da ponte para a esquerda
+                            translateTransition.setToX(bridgeWidth); // Movimento até o final da ponte
+                        }
+
+                        // Configurando a posição inicial do carro na tela
+                        objCar.setX(startX);
+                        objCar.setY(225);
+
+                        // Lidando com a finalização da transição do carro
+                        translateTransition.setOnFinished(event -> {
+                            // Ao terminar a transição, remove o carro da cena e libera o semáforo da ponte
+                            root.getChildren().remove(objCar);
+                            car.isAssigned = false;
+                            bridgeSemaphore.release(); // Libera o semáforo da ponte
+                        });
+
+                        // Iniciando a transição de movimento do carro
+                        translateTransition.play();
+                        root.getChildren().add(objCar); // Adicionando o carro à cena
+                    });
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
         launch(args);
     }
 }
