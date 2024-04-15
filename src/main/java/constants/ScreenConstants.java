@@ -8,4 +8,5 @@ public class ScreenConstants {
     public static double bridgeFirstHeight = height * 0.45;
     public static double bridgeSecondHeight = height * 0.55;
     public static double bridgeWidth = bridgeFinal - bridgeInitial;
+    public static double bridgeHeight = bridgeSecondHeight - bridgeFirstHeight;
 }

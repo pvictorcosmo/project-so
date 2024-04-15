@@ -11,6 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -40,8 +41,17 @@ public class CarApplication extends Application {
         Line linhaInferior = new Line(ScreenConstants.bridgeInitial, ScreenConstants.bridgeSecondHeight, ScreenConstants.bridgeFinal, ScreenConstants.bridgeSecondHeight); // Ponte inferior
         linhaInferior.setStroke(Color.BROWN); // Cor marrom para a ponte
 
+        // add pista
+        Rectangle pista =  new Rectangle(ScreenConstants.bridgeWidth, ScreenConstants.bridgeHeight);
+        pista.setX(ScreenConstants.bridgeInitial);
+        pista.setY(ScreenConstants.bridgeFirstHeight);
+        pista.setFill(Color.gray(0.7));
+
+
+
+
         // Adicionando as linhas ao painel
-        root.getChildren().addAll(linhaSuperior, linhaInferior);
+        root.getChildren().addAll(pista, linhaSuperior, linhaInferior);
 
         // Criando a cena e adicionando-a ao palco
         primaryStage.setScene(scene);
@@ -98,26 +108,18 @@ public class CarApplication extends Application {
             if (car.getApplicationState() == ApplicationState.CROSSING && !car.isAssigned) {
                 if (bridgeSemaphore.tryAcquire()) {
 
-                    // Tentando adquirir o semáforo da ponte
-
-                car.isAssigned = true;
-
-
-                // Movendo o carro na ponte
-
-
+                    car.isAssigned = true;
 
                     // Definindo a posição final com base na direção do carro
                     double startX;
-                    double direction =0;
+                    double direction;
+
                     if (car.getCarDirection() == Direction.TO_RIGHT) {
                         startX = ScreenConstants.bridgeFinal; // Começa do final da ponte para a direita
                         direction = -ScreenConstants.bridgeWidth;
-
                     } else {
                         startX = ScreenConstants.bridgeInitial; // Começa do começo da ponte para a esquerda
                         direction = ScreenConstants.bridgeWidth;
-
                     }
                     ObjectCar objCar = new ObjectCar(startX, (ScreenConstants.bridgeFirstHeight -ScreenConstants.bridgeSecondHeight)/2 + ScreenConstants.bridgeSecondHeight, car); // ver oq é esse x e y
 
