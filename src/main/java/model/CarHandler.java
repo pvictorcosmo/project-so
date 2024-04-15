@@ -43,7 +43,7 @@ public class CarHandler {
 
 
     }
-    public void createCar(Double waitingTime, Double crossingTime, Direction carDirection,double initialX,double initialY){
+    public void createCar(Double waitingTime, Double crossingTime, Direction carDirection){
         Car car = new Car(
                 cars.size(),
                 waitingTime,
