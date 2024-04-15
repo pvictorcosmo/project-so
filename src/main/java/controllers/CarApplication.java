@@ -11,6 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Bridge;
@@ -100,27 +101,30 @@ public class CarApplication extends Application {
                     // Tentando adquirir o semáforo da ponte
 
                 car.isAssigned = true;
-                ObjectCar objCar = new ObjectCar(50 + 20, 225, car); // ver oq é esse x e y
+
 
                 // Movendo o carro na ponte
 
-                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCrossingTime()), objCar);
+
 
                     // Definindo a posição final com base na direção do carro
                     double startX;
+                    double direction =0;
                     if (car.getCarDirection() == Direction.TO_RIGHT) {
                         startX = ScreenConstants.bridgeFinal; // Começa do final da ponte para a direita
-                        translateTransition.setToX(-ScreenConstants.bridgeWidth); // Movimento até o início da ponte
+                        direction = -ScreenConstants.bridgeWidth;
+
                     } else {
                         startX = ScreenConstants.bridgeInitial; // Começa do começo da ponte para a esquerda
-                        translateTransition.setToX(ScreenConstants.bridgeWidth); // Movimento até o final da ponte
+                        direction = ScreenConstants.bridgeWidth;
+
                     }
+                    ObjectCar objCar = new ObjectCar(startX, (ScreenConstants.bridgeFirstHeight -ScreenConstants.bridgeSecondHeight)/2 + ScreenConstants.bridgeSecondHeight, car); // ver oq é esse x e y
 
                     // Configurando a posição inicial do carro na tela
-                    objCar.setX(startX);
-                    objCar.setY(
-                            ((ScreenConstants.bridgeFirstHeight - ScreenConstants.bridgeSecondHeight)/2) + ScreenConstants.bridgeSecondHeight
-                    );
+                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCrossingTime()), objCar);
+                    translateTransition.setToX(direction); // Movimento até o final da ponte
+
 
                     // Lidando com a finalização da transição do carro
                     translateTransition.setOnFinished(event -> {
