@@ -33,11 +33,11 @@ public class CarApplication extends Application {
 
         double bridgeInitialWidth = width * 0.15;
         double bridgeFinalWidth = width * 0.85;
-        double bridgeInitialHeight = (double) height /3;
-        double bridgeFinalHeight = (double) height /2;
+        double bridgeFirstHeight = (double) height /3;
+        double bridgeSecondHeight = (double) height /2;
         // Criando as linhas horizontais para representar a ponte
-        Line linhaSuperior = new Line(bridgeInitialWidth, 200, bridgeFinalWidth, 200); // Ponte superior
-        Line linhaInferior = new Line(bridgeInitialWidth, 250, bridgeFinalWidth, 250); // Ponte inferior
+        Line linhaSuperior = new Line(bridgeInitialWidth, bridgeFirstHeight, bridgeFinalWidth, bridgeFirstHeight); // Ponte superior
+        Line linhaInferior = new Line(bridgeInitialWidth, bridgeSecondHeight, bridgeFinalWidth, bridgeSecondHeight); // Ponte inferior
         linhaSuperior.setStroke(Color.BROWN); // Cor marrom para a ponte
         linhaInferior.setStroke(Color.BROWN); // Cor marrom para a ponte
 
