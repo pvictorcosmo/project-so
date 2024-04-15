@@ -28,7 +28,7 @@ public class CarApplication extends Application {
     public void start(Stage primaryStage) {
         root = new Group();
         Scene scene = new Scene(root, 800, 600);
-
+        //mudar ponte hardcored U.U
         // Criando as linhas horizontais para representar a ponte
         Line linhaSuperior = new Line(50, 200, 550, 200); // Ponte superior
         Line linhaInferior = new Line(50, 250, 550, 250); // Ponte inferior
@@ -71,6 +71,7 @@ public class CarApplication extends Application {
         CarHandler handler = CarHandler.handler();
 
         // Criando os carros
+        //TODO:change this U.U (initialX and initialY)
         handler.createCar(7.0, 12.0, Direction.TO_LEFT, 50 + 20, 225);
         handler.createCar(3.0, 20.0, Direction.TO_LEFT, 50 + 20, 225);
         handler.createCar(9.0, 6.0, Direction.TO_LEFT, 50 + 20, 225);
@@ -87,29 +88,34 @@ public class CarApplication extends Application {
 
     // Método para atualizar a posição dos carros na tela
     static public void updateCarPosition(List<Car> cars) {
+        Platform.runLater(() -> {
         for (Car car : cars) {
             // Verificando se o carro está cruzando e não foi atribuído
+
             if (car.getApplicationState() == ApplicationState.CROSSING && !car.isAssigned) {
-                // Tentando adquirir o semáforo da ponte
 
                     car.isAssigned = true;
+                    //TODO:change this U.U
                     ObjectCar objCar = new ObjectCar(50 + 20, 225, car);
 
                     // Movendo o carro na ponte
-                    Platform.runLater(() -> {
+
                         TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCrossingTime()), objCar);
 
                         // Definindo a posição final com base na direção do carro
                         double startX;
                         double bridgeWidth = 550 - 50; // Largura da ponte
+                        double direction = 0.0;
                         if (car.getCarDirection() == Direction.TO_RIGHT) {
                             startX = 550; // Começa do final da ponte para a direita
-                            translateTransition.setToX(-bridgeWidth); // Movimento até o início da ponte
+                            direction = -bridgeWidth;
+
                         } else {
                             startX = 50 + 20; // Começa do começo da ponte para a esquerda
-                            translateTransition.setToX(bridgeWidth); // Movimento até o final da ponte
-                        }
+                            direction = bridgeWidth;
 
+                        }
+                        translateTransition.setToX(direction); // Movimento até o final da ponte
                         // Configurando a posição inicial do carro na tela
                         objCar.setX(startX);
                         objCar.setY(225);
@@ -119,16 +125,16 @@ public class CarApplication extends Application {
                             // Ao terminar a transição, remove o carro da cena e libera o semáforo da ponte
                             root.getChildren().remove(objCar);
                             car.isAssigned = false;
-
                         });
 
                         // Iniciando a transição de movimento do carro
                         translateTransition.play();
                         root.getChildren().add(objCar); // Adicionando o carro à cena
-                    });
 
             }
+
         }
+        });
     }
 
     public static void main(String[] args) {
