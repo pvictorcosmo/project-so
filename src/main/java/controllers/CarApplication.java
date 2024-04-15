@@ -27,11 +27,17 @@ public class CarApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         root = new Group();
-        Scene scene = new Scene(root, 800, 600);
+        int width = 800;
+        int height = 600;
+        Scene scene = new Scene(root, width, height);
 
+        double bridgeInitialWidth = width * 0.15;
+        double bridgeFinalWidth = width * 0.85;
+        double bridgeInitialHeight = (double) height /3;
+        double bridgeFinalHeight = (double) height /2;
         // Criando as linhas horizontais para representar a ponte
-        Line linhaSuperior = new Line(50, 200, 550, 200); // Ponte superior
-        Line linhaInferior = new Line(50, 250, 550, 250); // Ponte inferior
+        Line linhaSuperior = new Line(bridgeInitialWidth, 200, bridgeFinalWidth, 200); // Ponte superior
+        Line linhaInferior = new Line(bridgeInitialWidth, 250, bridgeFinalWidth, 250); // Ponte inferior
         linhaSuperior.setStroke(Color.BROWN); // Cor marrom para a ponte
         linhaInferior.setStroke(Color.BROWN); // Cor marrom para a ponte
 
