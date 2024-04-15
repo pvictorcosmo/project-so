@@ -46,15 +46,13 @@ public class Car extends Thread {
         Double actualTimeCrossing;
         try {
             while(true){
-
                 if(state == state.STOPPED){
                     actualTime = System.currentTimeMillis();
                     expectedTime += actualTime - lastTime;
                     lastTime = actualTime;
                     if(expectedTime/1000 >= waitingTime){
                         Log.doLog(CarHandler.handler().getCars());
-
-
+                        CarApplication.updateCarPosition(CarHandler.handler().getCars());
                         state = ApplicationState.WAITING;
                         expectedTime = 0.0;
                     }
@@ -62,7 +60,7 @@ public class Car extends Thread {
                 else if(state == ApplicationState.WAITING){
                     Bridge.bridge().getMutex().acquire();
                     Log.doLog(CarHandler.handler().getCars());
-
+                    CarApplication.updateCarPosition(CarHandler.handler().getCars());
                     if((Bridge.bridge().getBridgeDirection()== Direction.STOP)||(carDirection != Bridge.bridge().getBridgeDirection())) {
                         if (carDirection != Bridge.bridge().getBridgeDirection() && Bridge.bridge().getBridgeDirection() != Direction.STOP) {
                             Bridge.bridge().setAux(Bridge.bridge().getAux() + 1);
