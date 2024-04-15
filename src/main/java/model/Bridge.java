@@ -11,7 +11,6 @@ import enums.Priority;
 
 public class Bridge{
     private static Bridge instance = null;
-    private Double size;
     public static Semaphore releaseBridge = new Semaphore(1,true);
     public static Semaphore car = new Semaphore(0,true);
     public static Semaphore mutex = new Semaphore(1,true);
@@ -21,9 +20,8 @@ public class Bridge{
     public static int aux;                            //Guarda o numero de Cars do outro lado da ponte +1
 
 
-    public Bridge(Double size,Priority priority) {
+    public Bridge(Priority priority) {
         super();
-        this.size = size;
         this.firstCar = null;
         this.bridgeDirection = Direction.STOP;
         this.priority = priority;
@@ -33,27 +31,13 @@ public class Bridge{
         this.aux = 0;
 
     }
-    public static void newBridge(Double size,Priority priority){
+    public static void newBridge(Priority priority){
         if(instance == null){
-            instance = new Bridge(size, priority);
+            instance = new Bridge(priority);
         }
     }
     public static Bridge bridge(){
         return instance;
-    }
-
-    public Double getSize() {
-        return size;
-    }
-    public void setSize(Double size) {
-        this.size = size;
-    }
-
-    public Car getFirstCar() {
-        return firstCar;
-    }
-    public void setFirstCar(Car firstCar) {
-        this.firstCar = firstCar;
     }
 
     public Semaphore getReleaseBridge() {

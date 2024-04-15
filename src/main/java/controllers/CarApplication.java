@@ -31,14 +31,16 @@ public class CarApplication extends Application {
         int height = 600;
         Scene scene = new Scene(root, width, height);
 
-        double bridgeInitialWidth = width * 0.15;
-        double bridgeFinalWidth = width * 0.85;
-        double bridgeFirstHeight = (double) height /3;
-        double bridgeSecondHeight = (double) height /2;
+        double bridgeInitial = width * 0.15;
+        double bridgeFinal = width * 0.85;
+        double bridgeFirstHeight = height * 0.45;
+        double bridgeSecondHeight = height * 0.55;
+
         // Criando as linhas horizontais para representar a ponte
-        Line linhaSuperior = new Line(bridgeInitialWidth, bridgeFirstHeight, bridgeFinalWidth, bridgeFirstHeight); // Ponte superior
-        Line linhaInferior = new Line(bridgeInitialWidth, bridgeSecondHeight, bridgeFinalWidth, bridgeSecondHeight); // Ponte inferior
+        Line linhaSuperior = new Line(bridgeInitial, bridgeFirstHeight, bridgeFinal, bridgeFirstHeight); // Ponte superior
         linhaSuperior.setStroke(Color.BROWN); // Cor marrom para a ponte
+
+        Line linhaInferior = new Line(bridgeInitial, bridgeSecondHeight, bridgeFinal, bridgeSecondHeight); // Ponte inferior
         linhaInferior.setStroke(Color.BROWN); // Cor marrom para a ponte
 
         // Adicionando as linhas ao painel
@@ -53,7 +55,7 @@ public class CarApplication extends Application {
         addCarsToBridge();
 
         // Inicializando a ponte
-        Bridge.newBridge(50.0, Priority.LEFT_RIGHT);
+        Bridge.newBridge(Priority.LEFT_RIGHT);
 
         // Iniciando a aplicação
         primaryStage.setTitle("Car App");
