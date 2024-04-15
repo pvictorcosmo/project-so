@@ -93,48 +93,55 @@ public class CarApplication extends Application {
 
     // Método para atualizar a posição dos carros na tela
     static public void updateCarPosition(List<Car> cars) {
+        Platform.runLater(() -> {
         for (Car car : cars) {
             // Verificando se o carro está cruzando e não foi atribuído
             if (car.getApplicationState() == ApplicationState.CROSSING && !car.isAssigned) {
-                // Tentando adquirir o semáforo da ponte
+                if (bridgeSemaphore.tryAcquire()) {
 
-                    car.isAssigned = true;
-                    ObjectCar objCar = new ObjectCar(50 + 20, 225, car);
+                    // Tentando adquirir o semáforo da ponte
 
-                    // Movendo o carro na ponte
-                    Platform.runLater(() -> {
-                        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCrossingTime()), objCar);
+                car.isAssigned = true;
+                ObjectCar objCar = new ObjectCar(50 + 20, 225, car);
 
-                        // Definindo a posição final com base na direção do carro
-                        double startX;
-                        double bridgeWidth = 550 - 50; // Largura da ponte
-                        if (car.getCarDirection() == Direction.TO_RIGHT) {
-                            startX = 550; // Começa do final da ponte para a direita
-                            translateTransition.setToX(-bridgeWidth); // Movimento até o início da ponte
-                        } else {
-                            startX = 50 + 20; // Começa do começo da ponte para a esquerda
-                            translateTransition.setToX(bridgeWidth); // Movimento até o final da ponte
-                        }
+                // Movendo o carro na ponte
 
-                        // Configurando a posição inicial do carro na tela
-                        objCar.setX(startX);
-                        objCar.setY(225);
+                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(car.getCrossingTime()), objCar);
 
-                        // Lidando com a finalização da transição do carro
-                        translateTransition.setOnFinished(event -> {
-                            // Ao terminar a transição, remove o carro da cena e libera o semáforo da ponte
-                            root.getChildren().remove(objCar);
-                            car.isAssigned = false;
+                    // Definindo a posição final com base na direção do carro
+                    double startX;
+                    double bridgeWidth = 550 - 50; // Largura da ponte
+                    if (car.getCarDirection() == Direction.TO_RIGHT) {
+                        startX = 550; // Começa do final da ponte para a direita
+                        translateTransition.setToX(-bridgeWidth); // Movimento até o início da ponte
+                    } else {
+                        startX = 50 + 20; // Começa do começo da ponte para a esquerda
+                        translateTransition.setToX(bridgeWidth); // Movimento até o final da ponte
+                    }
 
-                        });
+                    // Configurando a posição inicial do carro na tela
+                    objCar.setX(startX);
+                    objCar.setY(225);
 
-                        // Iniciando a transição de movimento do carro
-                        translateTransition.play();
-                        root.getChildren().add(objCar); // Adicionando o carro à cena
+                    // Lidando com a finalização da transição do carro
+                    translateTransition.setOnFinished(event -> {
+                        // Ao terminar a transição, remove o carro da cena e libera o semáforo da ponte
+                        root.getChildren().remove(objCar);
+                        car.isAssigned = false;
+                        bridgeSemaphore.release(); // Libera o semáforo da ponte
+
+
                     });
+
+                    // Iniciando a transição de movimento do carro
+                    translateTransition.play();
+                    root.getChildren().add(objCar); // Adicionando o carro à cena
+
+            }
 
             }
         }
+        });
     }
 
     public static void main(String[] args) {
